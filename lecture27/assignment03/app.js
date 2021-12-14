@@ -28,7 +28,7 @@ const app = Vue.createApp({
         setTimeout(function () {
           that.counter = 0
           console.log('sup')
-        }, 5000)
+        }, 6000)
       }
     },
   },
