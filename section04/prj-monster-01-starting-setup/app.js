@@ -9,6 +9,7 @@ const app = Vue.createApp({
       monsterHealth: 100,
       currentRound: 1,
       winner: null,
+      logMessages: []
     }
   },
   methods: {
@@ -18,16 +19,15 @@ const app = Vue.createApp({
 
       this.monsterHealth -= playerAttackValue
 
+      this.addLogMessage('player', 'attack', playerAttackValue)
       this.attackPlayer()
-
-      console.log(
-        `Regular attack! player: ${this.playerHealth}, monster: ${this.monsterHealth}`,
-      )
     },
     attackPlayer() {
       const monsterAttackValue = calculateDamage(8, 12)
 
       this.playerHealth -= monsterAttackValue
+
+      this.addLogMessage('monster', 'attack', monsterAttackValue)
     },
     specialAttack() {
       this.currentRound++
@@ -35,11 +35,8 @@ const app = Vue.createApp({
 
       this.monsterHealth -= playerAttackValue
 
+      this.addLogMessage('player', 'attack', playerAttackValue)
       this.attackPlayer()
-
-      console.log(
-        `Special attack! player: ${this.playerHealth}, monster: ${this.monsterHealth}`,
-      )
     },
     healPlayer() {
       this.currentRound++
@@ -51,21 +48,27 @@ const app = Vue.createApp({
         this.playerHealth += playerHealValue
       }
 
-      this.attackPlayer()
+      this.addLogMessage('player', 'heal', playerHealValue)
 
-      console.log(
-        `Heal! player: ${this.playerHealth}, monster: ${this.monsterHealth}`,
-      )
+      this.attackPlayer()
     },
     startNewGame() {
       this.playerHealth = 100
       this.monsterHealth = 100
       this.currentRound = 1
       this.winner = null
+      this.logMessages = []
     },
     surrender() {
       this.winner = 'monster'
     },
+    addLogMessage(who, what, value) {
+      this.logMessages.unshift({
+        actionBy: who,
+        actionType: what,
+        actionValue: value
+      })
+    }
   },
   computed: {
     currentPlayerHealth() {
@@ -86,6 +89,9 @@ const app = Vue.createApp({
     healCooldown() {
       return this.currentRound % 4 !== 0
     },
+    actionInitiator() {
+      return this.logMessage
+    }
   },
   watch: {
     playerHealth(value) {
